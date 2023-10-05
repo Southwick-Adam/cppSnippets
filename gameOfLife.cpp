@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <unistd.h>
 using namespace std;
 
 //global variable
@@ -11,6 +12,7 @@ bool testgrid(int posx, int posy);
 char** setUpGrid();
 void print();
 
+//parent class for both predator (Doodlebug) and prey (Ant)
 class Organism {
     int age;
     int breedAge;
@@ -98,6 +100,7 @@ void Organism::breed(int px, int py){
     return;
 }
 
+//prey
 class Ant :public Organism {
     public:
         Ant() : Organism(3, 0, 0, 'o'){}
@@ -137,6 +140,7 @@ void Ant::breed(int px, int py){
     ageReset();
 }
 
+//predator
 class Doodlebug : public Organism {
     int timeSinceFed;
     int starveTime;
@@ -291,7 +295,10 @@ int main(){
     const int initAntNum = 100;
     const int initDoodNum = 5;
 
-    cout<<"Press 'q' at any step to end the program.\n\n";
+    int iterations;
+
+    cout<<"Please enter the number if iterations you want to simulate: ";
+    cin >> iterations;
 
     //SET UP
     gridPtr = setUpGrid();
@@ -299,7 +306,7 @@ int main(){
     srand((unsigned) time(NULL));
     int n = 0;
     while (n < initAntNum){
-	    int random = rand() % gridSize;
+        int random = rand() % gridSize;
         int random2 = rand() % gridSize;
         if (testgrid(random, random2)){
             spawnAnt(random, random2);
@@ -308,7 +315,7 @@ int main(){
     }
     n = 0; //reset
     while (n < initDoodNum){
-	    int random = rand() % gridSize;
+        int random = rand() % gridSize;
         int random2 = rand() % gridSize;
         if (testgrid(random, random2)){
             spawnDood(random, random2);
@@ -320,9 +327,7 @@ int main(){
 
     string input;
     //ask for input for time steps
-    while(true){
-        cout<<"Press Enter ";
-        getline(cin, input);
+    while(iterations > 0){
         cout<<endl;
 
         if (input == "q") {
@@ -340,6 +345,9 @@ int main(){
         }
         print();
         cout<<"\n";
+        iterations--;
+        //this is just to slow it down to visual speeds so you can see the changes on the grid inc to slow or dec to speed up
+        usleep(100000);
     }
     cout << "Exiting program--\n";
     //delete all the Organism objects
